@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  pulsemind:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pulsemind-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=3000
+      - JWT_SECRET=${JWT_SECRET:-pulsemind-change-this-secret-in-production}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      - DB_PATH=/app/data/pulsemind.db
+    volumes:
+      - pulsemind-data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/auth/me"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  pulsemind-data:
+    driver: local
