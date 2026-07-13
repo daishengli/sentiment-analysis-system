@@ -14,6 +14,16 @@ export function getOpenAIClient(): OpenAI {
   return openaiClient
 }
 
+// 必须显式配置 OPENAI_MODEL
+function getModel(): string {
+  const config = useRuntimeConfig()
+  const configured = (config.openaiModel as string | undefined) || ''
+  if (!configured) {
+    throw new Error('未配置 OPENAI_MODEL。请在 .env 中设置 OPENAI_MODEL 后重启服务。')
+  }
+  return configured
+}
+
 export interface SentimentResult {
   sentiment: 'positive' | 'neutral' | 'negative'
   score: number // 1-5
@@ -24,7 +34,7 @@ export async function analyzeSentiment(text: string): Promise<SentimentResult> {
   const client = getOpenAIClient()
 
   const response = await client.chat.completions.create({
-    model: 'gpt-4o-mini',
+    model: getModel(),
     messages: [
       {
         role: 'system',
@@ -48,7 +58,6 @@ export async function analyzeSentiment(text: string): Promise<SentimentResult> {
       },
     ],
     temperature: 0.3,
-    response_format: { type: 'json_object' },
   })
 
   const content = response.choices[0]?.message?.content
@@ -98,7 +107,7 @@ export async function generateReportSummary(
   }
 
   const response = await client.chat.completions.create({
-    model: 'gpt-4o-mini',
+    model: getModel(),
     messages: [
       {
         role: 'system',
@@ -129,7 +138,6 @@ export async function generateReportSummary(
       },
     ],
     temperature: 0.5,
-    response_format: { type: 'json_object' },
   })
 
   const content = response.choices[0]?.message?.content

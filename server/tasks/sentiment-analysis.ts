@@ -76,6 +76,8 @@ async function analyzeTopic(topic: any) {
 
     for (const article of articles) {
       try {
+        // 限流：每个请求之间间隔 200ms，避免 429
+        await new Promise((r) => setTimeout(r, 200))
         const result = await analyzeSentiment(article.title + ' ' + article.summary)
         insertStmt.run(
           topic.id,

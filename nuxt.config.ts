@@ -10,6 +10,8 @@ export default defineNuxtConfig({
     jwtSecret: process.env.JWT_SECRET || 'pulsemind-secret-key-change-in-production',
     openaiApiKey: process.env.OPENAI_API_KEY || '',
     openaiBaseUrl: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+    openaiModel: process.env.OPENAI_MODEL,
+    newsApiKey: process.env.NEWSAPI_API_KEY || '',
     dbPath: process.env.DB_PATH || './data/pulsemind.db',
   },
 
